@@ -1,359 +1,728 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="google-adsense-account" content="ca-pub-1440645060910795">
-<title>OpenHelper — Free & Open Source AI Chatbot</title>
-
-<!-- AdSense Script -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1440645060910795"
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambient Technologies (techambient)</title>
+    
+    <!-- AdSense Script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1440645060910795"
      crossorigin="anonymous"></script>
 
-<link rel="icon" type="image/ico" href="source/icon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-<!-- Google reCAPTCHA -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  
-<style>
-:root{
---bg:#040508;--panel:rgba(255,255,255,.06);--border:rgba(255,255,255,.12);
---txt:#fff;--muted:#b6bfca;--a:#3b82f6;--b:#7c3aed;--c:#06b6d4;
-}
-*{box-sizing:border-box} html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);font-family:Inter,sans-serif;color:var(--txt);overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;background:
-radial-gradient(circle at 20% 20%,rgba(59,130,246,.22),transparent 35%),
-radial-gradient(circle at 80% 20%,rgba(124,58,237,.18),transparent 35%),
-radial-gradient(circle at 50% 100%,rgba(6,182,212,.18),transparent 40%);
-filter:blur(60px);z-index:-2}
-nav{position:fixed;top:0;left:0;right:0;z-index:99;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;backdrop-filter:blur(18px);background:rgba(4,5,8,.45);border-bottom:1px solid var(--border)}
-.logo{font-weight:900;letter-spacing:.5px}
-.hero{min-height:100vh;position:relative;display:grid;place-items:center;text-align:center}
-.hero-bg{position:absolute;inset:0;background:url('https://github.com/techambient/SonicSync/raw/main/meeting.png') center/cover no-repeat}
-.hero-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(4,5,8,.2),rgba(4,5,8,.92))}
-.hero-content{position:relative;z-index:2;padding:140px 24px}
-.badge{display:inline-block;padding:10px 16px;border:1px solid var(--border);background:#ffffff0f;border-radius:999px;backdrop-filter:blur(20px)}
-h1{font-size:clamp(3rem,8vw,7rem);margin:18px 0;font-weight:900}
-.sub{max-width:850px;margin:auto;color:var(--muted);font-size:1.2rem;line-height:1.8}
-.cta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:30px}
-.btn{padding:15px 24px;border-radius:18px;text-decoration:none;color:white;font-weight:700}
-.primary{background:linear-gradient(135deg,var(--a),var(--b))}
-.secondary{border:1px solid var(--border);background:#ffffff12}
-section{padding:100px 6%}
-.title{font-size:2.4rem;margin-bottom:30px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
-.card{background:var(--panel);border:1px solid var(--border);backdrop-filter:blur(24px);border-radius:28px;padding:28px;transition:.3s}
-.card:hover{transform:translateY(-6px)}
-.metric{font-size:3rem;font-weight:900;background:linear-gradient(135deg,#fff,#8ec5ff);-webkit-background-clip:text;color:transparent}
-table{width:100%;border-collapse:collapse}
-td,th{padding:18px;border:1px solid var(--border)}
-footer{text-align:center;padding:70px;color:var(--muted)}
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <!-- Chart.js for User Statistics Pie Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-/* Phone & Tablet Optimization Media Queries */
-@media (max-width: 768px) {
-  nav { padding: 14px 6%; font-size: 0.9rem; }
-  .hero-content { padding: 120px 16px 60px 16px; }
-  .badge { font-size: 0.85rem; padding: 8px 14px; line-height: 1.4; }
-  .sub { font-size: 1rem; line-height: 1.6; }
-  .cta { flex-direction: column; width: 100%; max-width: 320px; margin: 30px auto 0 auto; gap: 12px; }
-  .btn { width: 100%; text-align: center; padding: 14px 20px; }
-  section { padding: 60px 6%; }
-  .title { font-size: 1.8rem; margin-bottom: 20px; text-align: center; }
-  .grid { grid-template-columns: 1fr; gap: 16px; }
-  .card { padding: 20px; border-radius: 20px; }
-  .card:hover { transform: none; }
-  .metric { font-size: 2.5rem; }
-  td, th { padding: 12px 8px; font-size: 0.85rem; }
-  footer { padding: 40px 20px; font-size: 0.85rem; }
-}
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        liquid: {
+                            lightBg: '#f0f4f8',
+                            darkBg: '#07090e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
-/* reCAPTCHA modal */
-#captchaOverlay{
-  display:none;
-  position:fixed;
-  inset:0;
-  z-index:100000;
-  background:rgba(0,0,0,.72);
-  backdrop-filter:blur(12px);
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
+    <style>
+        :root {
+            --bg-gradient-light: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 50%, #d8e5fc 100%);
+            --text-main-light: #090d16;
+            --text-sub-light: #334155;
+            --glass-bg-light: rgba(255, 255, 255, 0.55);
+            --glass-border-light: rgba(255, 255, 255, 0.9);
+            --glass-shadow-light: 0 20px 50px 0 rgba(31, 38, 135, 0.12), inset 0 0 0 1.5px rgba(255, 255, 255, 0.7);
+            --card-hover-light: rgba(255, 255, 255, 0.85);
 
-#captchaBox{
-  width:min(420px,100%);
-  background:rgba(20,22,28,.96);
-  border:1px solid var(--border);
-  border-radius:24px;
-  padding:28px;
-  box-shadow:0 25px 80px rgba(0,0,0,.55);
-  text-align:center;
-}
+            --bg-gradient-dark: linear-gradient(135deg, #05070c 0%, #0c101d 50%, #030407 100%);
+            --text-main-dark: #f8fafc;
+            --text-sub-dark: #94a3b8;
+            --glass-bg-dark: rgba(15, 23, 42, 0.42);
+            --glass-border-dark: rgba(255, 255, 255, 0.15);
+            --glass-shadow-dark: 0 20px 50px 0 rgba(0, 0, 0, 0.55), inset 0 0 0 1.5px rgba(255, 255, 255, 0.1);
+            --card-hover-dark: rgba(30, 41, 59, 0.65);
+        }
 
-#captchaBox h2{
-  margin:0 0 10px;
-  font-size:1.35rem;
-}
+        body.light-theme {
+            background: var(--bg-gradient-light);
+            color: var(--text-main-light);
+        }
 
-#captchaBox p{
-  margin:0 0 22px;
-  color:var(--muted);
-  line-height:1.5;
-}
+        body.dark-theme {
+            background: var(--bg-gradient-dark);
+            color: var(--text-main-dark);
+        }
 
-#captchaContainer{
-  display:flex;
-  justify-content:center;
-  overflow:hidden;
-}
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+        }
 
-#captchaClose{
-  margin-top:20px;
-  padding:11px 20px;
-  border-radius:14px;
-  border:1px solid var(--border);
-  background:#ffffff10;
-  color:white;
-  cursor:pointer;
-  font-weight:600;
-}
-</style>
+        /* 1000% Real Liquid Glassmorphism & Chromatic Refraction */
+        .real-liquid-glass {
+            backdrop-filter: blur(28px) saturate(210%);
+            -webkit-backdrop-filter: blur(28px) saturate(210%);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .light-theme .real-liquid-glass {
+            background: var(--glass-bg-light);
+            border: 1px solid var(--glass-border-light);
+            box-shadow: var(--glass-shadow-light);
+            color: var(--text-main-light);
+        }
+
+        .dark-theme .real-liquid-glass {
+            background: var(--glass-bg-dark);
+            border: 1px solid var(--glass-border-dark);
+            box-shadow: var(--glass-shadow-dark);
+            color: var(--text-main-dark);
+        }
+
+        /* Specular Rim Highlight Glint */
+        .real-liquid-glass::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            transform: skewX(-25deg);
+            transition: 0.8s;
+            pointer-events: none;
+        }
+
+        .real-liquid-glass:hover::before {
+            left: 150%;
+        }
+
+        .real-liquid-card {
+            backdrop-filter: blur(24px) saturate(190%);
+            -webkit-backdrop-filter: blur(24px) saturate(190%);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .light-theme .real-liquid-card {
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 12px 35px 0 rgba(31, 38, 135, 0.09);
+            color: var(--text-main-light);
+        }
+
+        .light-theme .real-liquid-card:hover {
+            background: var(--card-hover-light);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px 0 rgba(99, 102, 241, 0.2);
+        }
+
+        .dark-theme .real-liquid-card {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 35px 0 rgba(0, 0, 0, 0.35);
+            color: var(--text-main-dark);
+        }
+
+        .dark-theme .real-liquid-card:hover {
+            background: var(--card-hover-dark);
+            border-color: rgba(99, 102, 241, 0.6);
+            transform: translateY(-6px);
+            box-shadow: 0 25px 50px 0 rgba(99, 102, 241, 0.35);
+        }
+
+        /* Apple Liquid Glass Animated Buttons with Specular Glints */
+        .apple-liquid-btn {
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+        }
+
+        .light-theme .apple-liquid-btn {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.85) 0%, rgba(79, 70, 229, 0.95) 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .light-theme .apple-liquid-btn:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(67, 56, 202, 1) 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 35px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        .dark-theme .apple-liquid-btn {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.75) 0%, rgba(79, 70, 229, 0.85) 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .dark-theme .apple-liquid-btn:hover {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.9) 0%, rgba(99, 102, 241, 0.95) 100%);
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 14px 35px rgba(129, 140, 248, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .apple-liquid-btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        /* Specular light sweep across buttons */
+        .apple-liquid-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 50%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(30deg);
+            transition: 0.6s ease;
+            pointer-events: none;
+        }
+
+        .apple-liquid-btn:hover::after {
+            left: 130%;
+        }
+
+        /* Dynamic Floating Refraction Orbs */
+        .liquid-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            animation: floatOrb 15s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0px, 0px) scale(1); }
+            50% { transform: translate(60px, 80px) scale(1.2); }
+            100% { transform: translate(-50px, 40px) scale(0.85); }
+        }
+
+        .light-theme .orb-1 { background: rgba(99, 102, 241, 0.25); top: 5%; left: 10%; }
+        .light-theme .orb-2 { background: rgba(236, 72, 153, 0.2); bottom: 10%; right: 10%; animation-delay: -5s; }
+        
+        .dark-theme .orb-1 { background: rgba(99, 102, 241, 0.38); top: 5%; left: 10%; }
+        .dark-theme .orb-2 { background: rgba(56, 189, 248, 0.32); bottom: 10%; right: 10%; animation-delay: -5s; }
+
+        /* Typing cursor */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
+<body class="relative selection:bg-indigo-500 selection:text-white">
 
-<body>
-<nav>
-<div class="logo">OpenHelper (formerly HybridAI)</div>
-<div>Unlimited Usage • Free • Open Source</div>
-</nav>
+    <div class="liquid-orb orb-1 w-[500px] h-[500px]"></div>
+    <div class="liquid-orb orb-2 w-[550px] h-[550px]"></div>
 
-<div id="site">
-<header class="hero">
-<div class="hero-bg"></div>
-<div class="hero-content">
-<div class="badge">The Only Free & Open Source AI Chatbot</div>
-<h1>Solve Anything,<br>Without Limits.</h1>
-<p class="sub">Fast, private and open-sourced. No ads. No tracking. Unlimited usage.</p>
+    <!-- Live Theme Switcher Navigation Bar -->
+    <nav class="fixed top-4 right-4 z-50">
+        <div class="real-liquid-glass px-3.5 py-2 rounded-full flex items-center space-x-1.5 shadow-xl">
+            <button onclick="setTheme('light')" id="btn-light" title="Light Theme" class="p-2 rounded-full transition-all flex items-center justify-center text-xs font-medium hover:bg-white/30">
+                <span class="material-symbols-outlined text-lg">light_mode</span>
+            </button>
+            <button onclick="setTheme('dark')" id="btn-dark" title="Dark Theme" class="p-2 rounded-full transition-all flex items-center justify-center text-xs font-medium hover:bg-white/30">
+                <span class="material-symbols-outlined text-lg">dark_mode</span>
+            </button>
+            <button onclick="setTheme('system')" id="btn-system" title="System Default Theme" class="px-3.5 py-2 rounded-full transition-all text-xs font-semibold flex items-center gap-1.5 hover:bg-white/30">
+                <span class="material-symbols-outlined text-sm">settings_system_daydream</span>
+                <span class="hidden sm:inline">System</span>
+            </button>
+        </div>
+    </nav>
 
-<div class="cta">
+    <!-- Hero Section -->
+    <header class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative z-10">
+        <div class="real-liquid-glass p-8 sm:p-16 rounded-3xl max-w-3xl w-full mx-auto">
+            <h1 id="typing-heading" class="text-4xl sm:text-6xl md:text-7xl font-black tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-6 typing-cursor min-h-[1.2em]"></h1>
+            <p id="subheader" class="text-lg sm:text-2xl font-medium opacity-0 transition-opacity duration-1000 transform translate-y-2">
+                Ambient Technologies (techambient)
+            </p>
+            <div class="mt-8 opacity-0 transition-opacity duration-1000 delay-500" id="hero-cta">
+                <a href="#projects" class="apple-liquid-btn inline-flex items-center gap-2.5 px-8 py-4 rounded-full font-bold text-base shadow-xl">
+                    <span class="material-symbols-outlined">explore</span>
+                    Explore Projects
+                </a>
+            </div>
+        </div>
+    </header>
 
-<a
-  class="btn primary"
-  href="https://github.com/techambient/HybridAI"
-  data-captcha-url="https://github.com/techambient/HybridAI">
-  View on GitHub
-</a>
+    <!-- Projects Section -->
+    <section id="projects" class="py-28 px-4 sm:px-8 max-w-7xl mx-auto reveal">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+                Our Projects <b>FOR YOU</b>
+            </h2>
+            <p class="opacity-80 max-w-xl mx-auto text-sm sm:text-base">
+                Explore our powerful open-source applications built to boost your productivity.
+            </p>
+        </div>
 
-<a
-  class="btn secondary"
-  href="https://techambient.github.io/HybridAI/chat"
-  data-captcha-url="https://techambient.github.io/HybridAI/chat">
-  Chat Now
-</a>
+        <!-- Real Liquid Glass Search Bar -->
+        <div class="max-w-xl mx-auto mb-14 relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none opacity-60">
+                <span class="material-symbols-outlined">search</span>
+            </div>
+            <input type="text" id="project-search" placeholder="Search projects by title or description..." 
+                class="w-full pl-12 pr-4 py-4 rounded-2xl real-liquid-glass placeholder-current opacity-90 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-sm sm:text-base">
+        </div>
 
-</div>
-</div>
-</header>
+        <!-- Projects Grid Container -->
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Dynamically injected project cards -->
+        </div>
+    </section>
 
-<section>
-<h2 class="title">Major Advantages</h2>
-<div class="grid">
-<div class="card"><div class="metric">✔</div><p>Reliable & fast AI model.</p></div>
-<div class="card"><div class="metric">∞</div><p>Unlimited free usage</p></div>
-<div class="card"><div class="metric">0%</div><p>Ads, telemetry and tracking.</p></div>
-<div class="card"><div class="metric">100%</div><p>Free & open source.</p></div>
-</div>
-</section>
+    <!-- Our Users Section -->
+    <section id="users" class="py-28 px-4 sm:px-8 max-w-5xl mx-auto reveal">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+                Our Users
+            </h2>
+            <p class="opacity-80 max-w-xl mx-auto text-sm sm:text-base">
+                Explore our total worldwide users based on our projects.
+            </p>
+        </div>
 
-<section id="features">
-<h2 class="title">Major Features</h2>
-<div class="grid">
-<div class="card">Local Chat History</div>
-<div class="card">Optimised for any device</div>
-<div class="card">Dynamic Theming</div>
-<div class="card">Material You UI</div>
-</div>
-</section>
+        <div class="real-liquid-glass p-6 sm:p-10 rounded-3xl flex flex-col md:flex-row items-center justify-around gap-10">
+            <div class="w-full md:w-1/2 max-w-xs sm:max-w-md relative flex justify-center">
+                <canvas id="userPieChart" class="max-h-[300px]"></canvas>
+            </div>
+            <div class="w-full md:w-1/2 space-y-4">
+                <h3 class="text-xl font-semibold text-indigo-500 dark:text-indigo-400 mb-3">Total 838 Users Breakdown</h3>
+                <div id="chart-legend-custom" class="space-y-3">
+                    <!-- Dynamically injected chart legend items -->
+                </div>
+            </div>
+        </div>
+    </section>
 
-<section>
-<h2 class="title">OpenHelper vs Others AI Chatbot</h2>
-<div class="card" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
-<table>
-<tr><th>Aspects</th><th>OpenHelper</th><th>Others AI Chatbot</th></tr>
-<tr><td>Chat Limitations</td><td>Unlimited</td><td>Limited</td></tr>
-<tr><td>Open Source</td><td>Fully Yes</td><td>No</td></tr>
-</table>
-</div>
-</section>
+    <!-- Footer -->
+    <footer class="py-16 px-4 text-center reveal border-t border-current/10 mt-16 real-liquid-glass">
+        <div class="max-w-3xl mx-auto space-y-3">
+            <p class="opacity-85 text-sm sm:text-base leading-relaxed">
+                © Ambient Technologies (techambient) 2026. All rights reserved.<br>
+                This website is generated by Ambient HybridAI Code Intelligence 1.0.
+            </p>
+        </div>
+    </footer>
 
-<section>
-<div class="card" style="text-align:center">
-<h2>Built for Education, Developers, Streaming & etc.</h2>
-<p style="color:var(--muted)">Free AI Chatbot across any devices with a modern, unlimited and reliable experience.</p>
-</div>
-</section>
+    <!-- reCAPTCHA Modal -->
+    <div id="recaptcha-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="real-liquid-glass p-8 rounded-3xl max-w-md w-full relative shadow-2xl transform scale-95 transition-transform duration-300" id="recaptcha-modal-content">
+            <button onclick="closeRecaptchaModal()" class="absolute top-4 right-4 opacity-70 hover:opacity-100 transition-opacity">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div class="text-center mb-6">
+                <div class="inline-flex p-3 rounded-2xl bg-indigo-500/20 text-indigo-500 dark:text-indigo-400 mb-3 border border-indigo-500/30">
+                    <span class="material-symbols-outlined text-3xl">verified_user</span>
+                </div>
+                <h3 class="text-xl font-bold">Security Verification</h3>
+                <p id="recaptcha-target-title" class="text-sm opacity-80 mt-1">Please verify you are human before proceeding to external repository.</p>
+            </div>
 
-<!-- BEGIN AADS AD UNIT 2456406 -->
-<div id="frame" style="width: 100%; margin: auto; position: relative; z-index: 99998; padding: 20px 0;">
-    <iframe data-aa='2456406' src='//acceptable.a-ads.com/2456406/?size=Adaptive' style='border:0; padding:0; width:70%; height:auto; overflow:hidden; display:block; margin:auto'></iframe>
-</div>
-<!-- END AADS AD UNIT 2456406 -->
+            <!-- Simulated Google reCAPTCHA Box -->
+            <div class="p-4 rounded-xl flex items-center justify-between mb-6 shadow-inner real-liquid-card">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="toggleCaptchaCheck()">
+                    <div id="captcha-checkbox" class="w-7 h-7 rounded border-2 border-slate-400 flex items-center justify-center bg-white/20 transition-colors">
+                        <span id="captcha-check-icon" class="material-symbols-outlined text-white text-lg opacity-0 transition-opacity">check</span>
+                    </div>
+                    <span class="text-sm font-medium select-none">I'm not a robot</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA" class="w-7 h-7 opacity-80">
+                    <span class="text-[9px] opacity-60 tracking-tighter mt-0.5">reCAPTCHA</span>
+                </div>
+            </div>
 
-<footer>
-OpenHelper (formerly HybridAI) • MIT Licensed • TechAmbient
-</footer>
-</div>
-
-
-<!-- reCAPTCHA MODAL -->
-<div id="captchaOverlay">
-
-  <div id="captchaBox">
-
-    <h2>Verification Required</h2>
-
-    <p>
-      Please complete the verification below to continue.
-    </p>
-
-    <div id="captchaContainer">
-      <div
-        class="g-recaptcha"
-        data-sitekey="6LcJM9EtAAAAAGEonAslLEXn5-MgLrG8iEPHGH7u"
-        data-callback="captchaSuccess"
-        data-expired-callback="captchaExpired"
-        data-error-callback="captchaError">
-      </div>
+            <button id="recaptcha-submit-btn" disabled onclick="executeRedirect()" class="w-full py-3.5 rounded-2xl bg-indigo-600/30 opacity-50 font-semibold transition-all border border-indigo-500/20 cursor-not-allowed">
+                Continue to Destination
+            </button>
+        </div>
     </div>
 
-    <button id="captchaClose" type="button">
-      Cancel
-    </button>
+    <script>
+        // =========================================================================
+        // 1. EDITABLE PROJECTS CONFIGURATION DATA
+        // =========================================================================
+        const projectsData = [
+            {
+                id: 'calc',
+                title: 'Ambient Calculator',
+                subtitle: 'An AI-powered, dynamic and beautiful calculator for Android tablet and phone',
+                icon: 'calculate',
+                url: 'https://github.com/techambient/Ambient-Calculator'
+            },
+            {
+                id: 'helper',
+                title: 'OpenHelper AI',
+                subtitle: 'OpenHelper AI is a free, open-source AI Chatbot powered entirely by HybridAI Intelligence 2.0, available across Web, Android, and Windows.',
+                icon: 'auto_awesome',
+                url: 'https://techambient.github.io/HybridAI/'
+            },
+            {
+                id: 'fdows',
+                title: 'F-dows',
+                subtitle: 'The Free and Open Source Windows App Store that natively support from Windows 95 ~ 11',
+                icon: 'apps',
+                url: 'https://techambient.github.io/F-dows/'
+            },
+            {
+                id: 'sonicsync',
+                title: 'SonicSync',
+                subtitle: 'A peer-to-peer instant content sharer without internet and delay.',
+                icon: 'screen_share',
+                url: 'https://techambient.github.io/SonicSync/'
+            },
+            {
+                id: 'webbuilder',
+                title: 'Web Builder',
+                subtitle: 'The drag & drop website builder, without coding needed!!',
+                icon: 'web',
+                url: 'https://techambient.github.io/AWB/'
+            },
+            {
+                id: 'textasker',
+                title: 'AI-Text-Asker',
+                subtitle: 'A simple Windows 11/10 tools that enables you to select text, press Win+/ on your keyboard and ask with AI instantly!!',
+                icon: 'text_fields',
+                url: 'https://github.com/techambient/AI-Text-Asker'
+            },
+            {
+                id: 'skrinai',
+                title: 'SkrinAI',
+                subtitle: 'SkrinAI is an AI-powered ultimate screen tool for Windows.',
+                icon: 'crop',
+                url: 'https://github.com/techambient/SkrinAI'
+            },
+            {
+                id: 'findery',
+                title: 'FinderySearch',
+                subtitle: 'FinderySearch is a private, ultra fast and no tracking search engine.',
+                icon: 'search',
+                url: 'https://aurasearch-real-private-unlimited-search-engine-18351778012.asia-southeast1.run.app'
+            },
+            {
+                id: 'homework',
+                title: 'Ambient Homework',
+                subtitle: 'Best open source homework manager for Android devices that let you won\'t forget homework anymore!!.',
+                icon: 'assignment',
+                url: 'https://techambient.github.io/Homework/'
+            }
+        ];
 
-  </div>
+        // =========================================================================
+        // 2. EDITABLE USER STATS PIE CHART CONFIGURATION DATA
+        // =========================================================================
+        const userStatsData = {
+            labels: ['OpenHelper AI', 'Ambient Calculator', 'F-dows', 'SonicSync', 'Ambient Homework', 'Ambient Web Builder'],
+            data: [68.97, 16.23, 11.34, 1.91, 1.07, 0.48],
+            colors: ['#6366f1', '#38bdf8', '#a855f7', '#64748b', '#14748b', '#84743b']
+        };
 
-</div>
+        // Theme Switcher Engine
+        function setTheme(mode) {
+            const body = document.body;
+            const btnLight = document.getElementById('btn-light');
+            const btnDark = document.getElementById('btn-dark');
+            const btnSystem = document.getElementById('btn-system');
 
+            // Reset active states
+            [btnLight, btnDark, btnSystem].forEach(b => b.classList.remove('bg-white/40', 'shadow-sm'));
 
-<script>
+            if (mode === 'light') {
+                body.className = 'light-theme selection:bg-indigo-500 selection:text-white';
+                btnLight.classList.add('bg-white/40', 'shadow-sm');
+                localStorage.setItem('theme', 'light');
+            } else if (mode === 'dark') {
+                body.className = 'dark-theme selection:bg-indigo-500 selection:text-white';
+                btnDark.classList.add('bg-white/40', 'shadow-sm');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                // System default detection
+                btnSystem.classList.add('bg-white/40', 'shadow-sm');
+                localStorage.removeItem('theme');
+                applySystemTheme();
+            }
+        }
 
-let pendingURL = null;
+        function applySystemTheme() {
+            if (!localStorage.getItem('theme')) {
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (prefersDark) {
+                    document.body.className = 'dark-theme selection:bg-indigo-500 selection:text-white';
+                } else {
+                    document.body.className = 'light-theme selection:bg-indigo-500 selection:text-white';
+                }
+            }
+        }
 
+        // Listen to system theme changes dynamically
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            applySystemTheme();
+        });
 
-/*
- * Intercept BOTH buttons.
- * Nothing is opened until reCAPTCHA succeeds.
- */
-document.querySelectorAll('[data-captcha-url]').forEach(button => {
+        // Initialize Theme on load
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                setTheme('system');
+            }
+        }
 
-  button.addEventListener('click', function(event) {
+        // Typing Effect for Hero Title
+        function startTypingEffect() {
+            const text = "Welcome to";
+            const headingEl = document.getElementById('typing-heading');
+            const subheaderEl = document.getElementById('subheader');
+            const ctaEl = document.getElementById('hero-cta');
+            let idx = 0;
 
-    event.preventDefault();
+            function type() {
+                if (idx < text.length) {
+                    headingEl.textContent += text.charAt(idx);
+                    idx++;
+                    setTimeout(type, 150);
+                } else {
+                    headingEl.classList.remove('typing-cursor');
+                    subheaderEl.classList.remove('opacity-0', 'translate-y-2');
+                    subheaderEl.classList.add('opacity-100', 'translate-y-0');
+                    setTimeout(() => {
+                        ctaEl.classList.remove('opacity-0');
+                        ctaEl.classList.add('opacity-100');
+                    }, 300);
+                }
+            }
+            setTimeout(type, 400);
+        }
 
-    pendingURL = this.dataset.captchaUrl;
+        // Render Projects with Search Filtering
+        function renderProjects(filterText = '') {
+            const grid = document.getElementById('projects-grid');
+            grid.innerHTML = '';
 
-    document.getElementById('captchaOverlay').style.display = 'flex';
+            const filtered = projectsData.filter(p => 
+                p.title.toLowerCase().includes(filterText.toLowerCase()) || 
+                p.subtitle.toLowerCase().includes(filterText.toLowerCase())
+            );
 
-    /*
-     * Reset previous CAPTCHA state when opening again.
-     */
-    if (typeof grecaptcha !== 'undefined') {
-      try {
-        grecaptcha.reset();
-      } catch(e) {}
-    }
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full text-center py-12 opacity-75">
+                        <span class="material-symbols-outlined text-4xl mb-2">sentiment_dissatisfied</span>
+                        <p>No matching projects found.</p>
+                    </div>
+                `;
+                return;
+            }
 
-  });
+            filtered.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'real-liquid-card p-6 sm:p-8 rounded-3xl flex flex-col justify-between group';
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-indigo-500 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-2xl">${project.icon}</span>
+                            </div>
+                            <span class="text-xs uppercase tracking-wider px-3 py-1 rounded-full bg-white/20 border border-white/30 font-semibold">Open Source</span>
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-bold mb-3 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">${project.title}</h3>
+                        <p class="opacity-80 text-sm sm:text-base leading-relaxed mb-6">${project.subtitle}</p>
+                    </div>
+                    <button onclick="openRecaptchaModal('${project.url}', '${project.title}')" class="apple-liquid-btn w-full mt-4 py-3.5 px-4 rounded-2xl font-semibold flex items-center justify-center gap-2 shadow-md">
+                        <span>Access Project</span>
+                        <span class="material-symbols-outlined text-sm">open_in_new</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
 
-});
+        // Search bar listener
+        document.getElementById('project-search').addEventListener('input', (e) => {
+            renderProjects(e.target.value);
+        });
 
+        // Initialize Pie Chart and Custom Legend
+        let userChartInstance = null;
+        function initUserChart() {
+            const ctx = document.getElementById('userPieChart').getContext('2d');
+            
+            userChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: userStatsData.labels,
+                    datasets: [{
+                        data: userStatsData.data,
+                        backgroundColor: userStatsData.colors,
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    cutout: '72%'
+                }
+            });
 
-/*
- * Called automatically by Google reCAPTCHA
- * after the user successfully completes verification.
- */
-function captchaSuccess(token) {
+            // Populate custom legend
+            const legendContainer = document.getElementById('chart-legend-custom');
+            userStatsData.labels.forEach((label, idx) => {
+                const percentage = userStatsData.data[idx];
+                const color = userStatsData.colors[idx];
+                
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-3.5 rounded-2xl real-liquid-card';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-3.5 h-3.5 rounded-full shadow-sm" style="background-color: ${color};"></div>
+                        <span class="text-sm font-semibold">${label}</span>
+                    </div>
+                    <span class="text-sm font-bold text-indigo-500 dark:text-indigo-400">${percentage}%</span>
+                `;
+                legendContainer.appendChild(item);
+            });
+        }
 
-  if (!token || !pendingURL) {
-    return;
-  }
+        // reCAPTCHA Modal Logic
+        let pendingRedirectUrl = '';
+        let isCaptchaVerified = false;
 
-  const destination = pendingURL;
+        function openRecaptchaModal(url, title) {
+            pendingRedirectUrl = url;
+            isCaptchaVerified = false;
+            
+            document.getElementById('captcha-checkbox').classList.remove('border-indigo-500', 'bg-indigo-600');
+            document.getElementById('captcha-checkbox').classList.add('border-slate-400', 'bg-white/20');
+            document.getElementById('captcha-check-icon').classList.remove('opacity-100');
+            document.getElementById('captcha-check-icon').classList.add('opacity-0');
+            
+            const submitBtn = document.getElementById('recaptcha-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.className = 'w-full py-3.5 rounded-2xl bg-indigo-600/30 opacity-50 font-semibold transition-all border border-indigo-500/20 cursor-not-allowed';
+            
+            document.getElementById('recaptcha-target-title').textContent = `Verify to proceed to ${title}`;
 
-  /*
-   * Clear the pending destination first.
-   */
-  pendingURL = null;
+            const modal = document.getElementById('recaptcha-modal');
+            const content = document.getElementById('recaptcha-modal-content');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
 
-  /*
-   * Hide CAPTCHA.
-   */
-  document.getElementById('captchaOverlay').style.display = 'none';
+        function closeRecaptchaModal() {
+            const modal = document.getElementById('recaptcha-modal');
+            const content = document.getElementById('recaptcha-modal-content');
+            
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+        }
 
-  /*
-   * Redirect ONLY after successful CAPTCHA.
-   */
-  window.location.href = destination;
-}
+        function toggleCaptchaCheck() {
+            isCaptchaVerified = !isCaptchaVerified;
+            const checkbox = document.getElementById('captcha-checkbox');
+            const checkIcon = document.getElementById('captcha-check-icon');
+            const submitBtn = document.getElementById('recaptcha-submit-btn');
 
+            if (isCaptchaVerified) {
+                checkbox.classList.remove('border-slate-400', 'bg-white/20');
+                checkbox.classList.add('border-indigo-500', 'bg-indigo-600');
+                checkIcon.classList.remove('opacity-0');
+                checkIcon.classList.add('opacity-100');
 
-/*
- * CAPTCHA expired.
- */
-function captchaExpired() {
-  pendingURL = null;
-}
+                submitBtn.disabled = false;
+                submitBtn.className = 'apple-liquid-btn w-full py-3.5 rounded-2xl font-bold shadow-xl cursor-pointer';
+            } else {
+                checkbox.classList.remove('border-indigo-500', 'bg-indigo-600');
+                checkbox.classList.add('border-slate-400', 'bg-white/20');
+                checkIcon.classList.remove('opacity-100');
+                checkIcon.classList.add('opacity-0');
 
+                submitBtn.disabled = true;
+                submitBtn.className = 'w-full py-3.5 rounded-2xl bg-indigo-600/30 opacity-50 font-semibold transition-all border border-indigo-500/20 cursor-not-allowed';
+            }
+        }
 
-/*
- * CAPTCHA error.
- */
-function captchaError() {
-  pendingURL = null;
-}
+        function executeRedirect() {
+            if (isCaptchaVerified && pendingRedirectUrl) {
+                window.location.href = pendingRedirectUrl;
+            }
+        }
 
+        // Scroll Intersection Observer for reveal animations
+        function initScrollObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.15 });
 
-/*
- * Cancel button.
- */
-document.getElementById('captchaClose').addEventListener('click', function() {
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        }
 
-  pendingURL = null;
-
-  document.getElementById('captchaOverlay').style.display = 'none';
-
-  if (typeof grecaptcha !== 'undefined') {
-    try {
-      grecaptcha.reset();
-    } catch(e) {}
-  }
-
-});
-
-
-/*
- * Close the CAPTCHA by clicking outside the box.
- */
-document.getElementById('captchaOverlay').addEventListener('click', function(event) {
-
-  if (event.target === this) {
-
-    pendingURL = null;
-
-    this.style.display = 'none';
-
-    if (typeof grecaptcha !== 'undefined') {
-      try {
-        grecaptcha.reset();
-      } catch(e) {}
-    }
-
-  }
-
-});
-
-</script>
-
+        // Window Load Initialization
+        window.onload = function() {
+            initTheme();
+            startTypingEffect();
+            renderProjects();
+            initUserChart();
+            initScrollObserver();
+        };
+    </script>
 </body>
 </html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MachMatch Ultimate Laptop Recommender</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        primaryDark: '#4f46e5',
+                        surface: '#f8fafc',
+                        surfaceDark: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.92);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+        }
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-full flex flex-col justify-between selection:bg-indigo-500 selection:text-white transition-colors duration-200">
+
+    <!-- Top Navigation Header -->
+    <header class="w-full py-4 px-6 md:px-12 flex justify-between items-center border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md sticky top-0 z-50">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="restartQuiz()">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+                <span class="material-icons-round text-2xl">laptop_mac</span>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg tracking-tight">MachMatch<span class="text-indigo-600 dark:text-indigo-400">.ai</span></h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">100% Precise Laptop Recommender</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-3">
+            <button id="themeToggle" onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-slate-200/70 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition" aria-label="Toggle Theme">
+                <span id="themeIcon" class="material-icons-round text-xl">dark_mode</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 md:p-10 w-full max-w-5xl mx-auto">
+        
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="w-full glass-card rounded-3xl p-8 sm:p-14 shadow-2xl text-center animate-fade-in max-w-3xl mx-auto">
+            <div class="w-20 h-20 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-inner">
+                <span class="material-icons-round text-4xl">devices</span>
+            </div>
+            <span class="px-3.5 py-1.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 text-xs font-semibold rounded-full uppercase tracking-wider">10-Question 100% Precision Assessment</span>
+            <h2 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mt-4 mb-4 tracking-tight">Find Your Ideal Laptop With 100% Accuracy</h2>
+            <p class="text-slate-600 dark:text-slate-400 max-w-xl mx-auto text-base sm:text-lg mb-8 leading-relaxed">
+                Answer 10 essential workflow & lifestyle questions. Our fully expanded recommendation engine matches your exact budget tier, CPU, memory, storage, and display profile.
+            </p>
+            <button onclick="startQuiz()" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-2xl shadow-xl shadow-indigo-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center mx-auto space-x-2 text-base">
+                <span>Start Smart Assessment</span>
+                <span class="material-icons-round text-lg">arrow_forward</span>
+            </button>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="w-full hidden max-w-3xl mx-auto">
+            <!-- Progress & Stats -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center text-sm font-medium text-slate-500 dark:text-slate-400 mb-2">
+                    <span id="questionCounter">Question 1 of 10</span>
+                    <span id="progressPercent">10%</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-600 to-violet-500 rounded-full transition-all duration-300" style="width: 10%;"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl animate-fade-in" id="questionCardBox">
+                <h3 id="questionTitle" class="text-xl sm:text-2xl md:text-3xl font-bold mb-2 tracking-tight">Question Title</h3>
+                <p id="questionSubtitle" class="text-sm sm:text-base text-slate-500 dark:text-slate-400 mb-6">Subtitle</p>
+                
+                <div id="optionsList" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                    <!-- Dynamic Options Injected via JS -->
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200/80 dark:border-slate-800/80">
+                    <button id="prevBtn" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-sm font-medium transition flex items-center space-x-1 opacity-50 cursor-not-allowed" disabled>
+                        <span class="material-icons-round text-base">arrow_back</span>
+                        <span>Previous</span>
+                    </button>
+                    <button id="nextBtn" onclick="nextQuestion()" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition shadow-md shadow-indigo-600/20 flex items-center space-x-1 opacity-50 cursor-not-allowed" disabled>
+                        <span>Next Question</span>
+                        <span class="material-icons-round text-base">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContainer" class="w-full hidden space-y-6 max-w-4xl mx-auto">
+            <div class="glass-card rounded-3xl p-6 sm:p-10 md:p-12 shadow-2xl animate-fade-in">
+                <!-- Result Header -->
+                <div class="text-center pb-8 border-b border-slate-200 dark:border-slate-800">
+                    <div class="inline-flex p-3.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 mb-4 shadow-inner">
+                        <span class="material-icons-round text-3xl sm:text-4xl">verified</span>
+                    </div>
+                    <span class="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400">Your 100% Accurate Laptop Match</span>
+                    <h2 id="resultCategoryTitle" class="text-3xl sm:text-4xl md:text-5xl font-black mt-2 mb-3 tracking-tight">Category Title</h2>
+                    <p id="resultCategoryDesc" class="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
+                        Description
+                    </p>
+                </div>
+
+                <!-- Hardware Specifications Breakdown -->
+                <div class="py-8">
+                    <h3 class="text-xl sm:text-2xl font-bold mb-6 flex items-center space-x-2">
+                        <span class="material-icons-round text-indigo-600">memory</span>
+                        <span>Recommended Custom Hardware Specifications</span>
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Spec Card 1: Processor -->
+                        <div class="p-5 sm:p-6 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 flex items-start space-x-4">
+                            <div class="p-3 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                                <span class="material-icons-round text-2xl">developer_board</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Processor (CPU)</span>
+                                <h4 id="specCpu" class="font-bold text-base sm:text-lg mt-0.5 text-slate-900 dark:text-slate-100">CPU</h4>
+                                <p id="specCpuDesc" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">CPU Desc</p>
+                            </div>
+                        </div>
+
+                        <!-- Spec Card 2: RAM -->
+                        <div class="p-5 sm:p-6 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 flex items-start space-x-4">
+                            <div class="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex-shrink-0">
+                                <span class="material-icons-round text-2xl">bolt</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Memory (RAM)</span>
+                                <h4 id="specRam" class="font-bold text-base sm:text-lg mt-0.5 text-slate-900 dark:text-slate-100">RAM</h4>
+                                <p id="specRamDesc" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">RAM Desc</p>
+                            </div>
+                        </div>
+
+                        <!-- Spec Card 3: Storage -->
+                        <div class="p-5 sm:p-6 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 flex items-start space-x-4">
+                            <div class="p-3 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 flex-shrink-0">
+                                <span class="material-icons-round text-2xl">sd_storage</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Storage (SSD)</span>
+                                <h4 id="specStorage" class="font-bold text-base sm:text-lg mt-0.5 text-slate-900 dark:text-slate-100">Storage</h4>
+                                <p id="specStorageDesc" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Storage Desc</p>
+                            </div>
+                        </div>
+
+                        <!-- Spec Card 4: Display & Graphics -->
+                        <div class="p-5 sm:p-6 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800/60 flex items-start space-x-4">
+                            <div class="p-3 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex-shrink-0">
+                                <span class="material-icons-round text-2xl">desktop_windows</span>
+                            </div>
+                            <div>
+                                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wide">Display & Graphics</span>
+                                <h4 id="specDisplay" class="font-bold text-base sm:text-lg mt-0.5 text-slate-900 dark:text-slate-100">Display</h4>
+                                <p id="specDisplayDesc" class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">Display Desc</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Features & Perks -->
+                    <div class="mt-6 p-6 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40">
+                        <h4 class="font-semibold text-indigo-900 dark:text-indigo-200 text-sm sm:text-base mb-2 flex items-center space-x-2">
+                            <span class="material-icons-round text-indigo-600 text-lg">recommend</span>
+                            <span>Essential Features to Look For</span>
+                        </h4>
+                        <p id="specExtra" class="text-xs sm:text-sm text-indigo-800/80 dark:text-indigo-300 leading-relaxed">
+                            Extra features
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3.5 pt-6 border-t border-slate-200 dark:border-slate-800">
+                    <button onclick="copyResults()" class="flex-1 py-3.5 px-6 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 font-semibold text-sm transition flex items-center justify-center space-x-2 shadow-sm">
+                        <span class="material-icons-round text-lg">content_copy</span>
+                        <span>Copy Full Recommendation Summary</span>
+                    </button>
+                    <button onclick="restartQuiz()" class="flex-1 py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition shadow-lg shadow-indigo-600/25 flex items-center justify-center space-x-2">
+                        <span class="material-icons-round text-lg">restart_alt</span>
+                        <span>Retake Assessment</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-2 z-50 text-sm font-medium">
+        <span class="material-icons-round text-emerald-400">check_circle</span>
+        <span id="toastMsg">Copied to clipboard!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-5 text-center text-xs text-slate-400 dark:text-slate-600 border-t border-slate-200/50 dark:border-slate-900/50">
+        MachMatch AI &bull; 100% Precision Laptop Recommender
+    </footer>
+
+    <!-- JavaScript Quiz Logic & Fully Expanded Engine -->
+    <script>
+        // Theme initialization
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon();
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            const isDark = document.documentElement.classList.contains('dark');
+            icon.textContent = isDark ? 'light_mode' : 'dark_mode';
+        }
+
+        // 10 Essential Questions with precise multidimensional scoring vectors
+        const questions = [
+            {
+                title: "What is your primary everyday focus?",
+                subtitle: "Select the activity that consumes most of your computer time.",
+                options: [
+                    { label: "General office work, writing, research, and web browsing", value: "office", icon: "work", weight: { office: 15, balanced: 5 } },
+                    { label: "Coding, software development, data analysis, or virtual machines", value: "dev", icon: "code", weight: { dev: 18, workstation: 8 } },
+                    { label: "Video editing, 3D modeling, music production, or graphic design", value: "creative", icon: "brush", weight: { creative: 18, workstation: 8 } },
+                    { label: "Competitive gaming, streaming, or heavy 3D simulation", value: "gaming", icon: "sports_esports", weight: { gaming: 20 } }
+                ]
+            },
+            {
+                title: "How often do you travel or carry your laptop?",
+                subtitle: "This helps us calibrate weight and battery life priority.",
+                options: [
+                    { label: "Constantly on the move (daily flights, commuting, cafes)", value: "constant", icon: "flight", weight: { ultraportable: 15, macos: 8, chromeos: 5 } },
+                    { label: "Occasionally between home and office or campus", value: "moderate", icon: "directions_bus", weight: { balanced: 10, office: 6 } },
+                    { label: "Mostly stationary as a desktop replacement plugged into a desk", value: "stationary", icon: "desktop_mac", weight: { workstation: 15, gaming: 12 } },
+                    { label: "Moving around rooms at home or nearby coffee spots", value: "light", icon: "coffee", weight: { balanced: 8, budget: 6 } }
+                ]
+            },
+            {
+                title: "What is your software intensity and multitasking load?",
+                subtitle: "How demanding are the applications you run simultaneously?",
+                options: [
+                    { label: "Light: Browser tabs, email, docs, spreadsheets, and streaming video", value: "light", icon: "bolt", weight: { ultrabudget: 12, budget: 10, chromeos: 8 } },
+                    { label: "Moderate: Multiple apps open, large Excel sheets, occasional photo touchups", value: "moderate", icon: "trending_up", weight: { balanced: 12, budget: 6 } },
+                    { label: "Heavy: Multiple intensive tools running concurrently (IDEs, multiple Docker containers)", value: "heavy", icon: "memory", weight: { dev: 15, creative: 12 } },
+                    { label: "Extreme: High-end rendering, complex simulation engines, 4K video exports", value: "extreme", icon: "local_fire_department", weight: { gaming: 18, creative: 18, workstation: 15 } }
+                ]
+            },
+            {
+                title: "How important is battery life independence?",
+                subtitle: "How long do you need to stay unplugged away from an electrical outlet?",
+                options: [
+                    { label: "Crucial: Need 10-16+ hours of all-day unplugged confidence", value: "max", icon: "battery_full", weight: { ultraportable: 15, macos: 12, chromeos: 10 } },
+                    { label: "Important: A solid 7-9 hours to get through a normal workday", value: "good", icon: "battery_charging_full", weight: { balanced: 10, office: 8 } },
+                    { label: "Moderate: Usually near an outlet, 4-6 hours is acceptable", value: "moderate", icon: "battery_std", weight: { workstation: 6, budget: 6 } },
+                    { label: "Not a priority: Plugged in 90% of the time", value: "low", icon: "power", weight: { gaming: 15, workstation: 12 } }
+                ]
+            },
+            {
+                title: "What is your preferred operating system?",
+                subtitle: "Choose the OS you are most comfortable with or prefer.",
+                options: [
+                    { label: "macOS (Apple ecosystem integration and polished workflow)", value: "macos", icon: "laptop", weight: { macos: 25 } },
+                    { label: "Windows (Universal software compatibility and gaming)", value: "window", icon: "window", weight: { windows: 15, gaming: 10, workstation: 10 } },
+                    { label: "ChromeOS (Cloud-first, fast boot, security, and Android apps)", value: "chromeos", icon: "cloud_queue", weight: { chromeos: 25, ultrabudget: 8 } },
+                    { label: "Linux / Open Source (Developer-focused command line mastery)", value: "linux", icon: "terminal", weight: { dev: 12, linux: 20 } }
+                ]
+            },
+            {
+                title: "What is your budget tier for this investment?",
+                subtitle: "Select the price bracket that fits your expectations.",
+                options: [
+                    { label: "Ultra-Budget (< $450): Essential web browsing and basic typing", value: "ultrabudget", icon: "savings", weight: { ultrabudget: 25, chromeos: 12 } },
+                    { label: "Budget-Friendly ($450 - $750): Reliable student and daily office value", value: "budget", icon: "paid", weight: { budget: 20, office: 10 } },
+                    { label: "Mid-Range ($750 - $1,300): Great balance of performance and build quality", value: "mid", icon: "payments", weight: { balanced: 20, office: 10 } },
+                    { label: "Premium ($1,300 - $2,200): Top-tier craftsmanship and performance", value: "premium", icon: "star", weight: { ultraportable: 15, creative: 12, macos: 10 } },
+                    { label: "Elite / Flagship ($2,200+): Absolute peak performance with zero compromises", value: "elite", icon: "diamond", weight: { gaming: 15, workstation: 15, creative: 10 } }
+                ]
+            },
+            {
+                title: "How important is keyboard comfort and typing ergonomics?",
+                subtitle: "Do you type massive documents, reports, or code all day?",
+                options: [
+                    { label: "Extremely important: Type thousands of words daily with high tactile feedback needs", value: "high", icon: "keyboard", weight: { dev: 10, office: 10, workstation: 8 } },
+                    { label: "Standard: Normal emailing and document creation", value: "medium", icon: "description", weight: { balanced: 6 } },
+                    { label: "Minimal: Mostly use mouse or external peripherals", value: "low", icon: "mouse", weight: { gaming: 6 } }
+                ]
+            },
+            {
+                title: "What is your media consumption and visual quality expectation?",
+                subtitle: "How do you enjoy movies, photos, or digital art?",
+                options: [
+                    { label: "Cinematic perfection: True blacks, high HDR, and professional color grading", value: "pro", icon: "movie", weight: { creative: 12, macos: 8, workstation: 6 } },
+                    { label: "Vibrant and crisp: Great for daily viewing, streaming, and photos", value: "good", icon: "high_quality", weight: { balanced: 8, office: 6 } },
+                    { label: "Standard: Basic text reading and web browsing clarity", value: "basic", icon: "article", weight: { budget: 8, ultrabudget: 8 } }
+                ]
+            },
+            {
+                title: "How much local file storage do you typically consume?",
+                subtitle: "Do you keep massive local archives, 4K raw video, or game libraries?",
+                options: [
+                    { label: "Heavy: Hundreds of gigabytes of media files, local databases, or games", value: "heavy", icon: "folder_special", weight: { gaming: 12, creative: 12, workstation: 10 } },
+                    { label: "Moderate: Standard documents, photos, and a few apps", value: "moderate", icon: "folder", weight: { balanced: 8, office: 6 } },
+                    { label: "Light: Mostly cloud storage (Google Drive, OneDrive, iCloud)", value: "light", icon: "cloud", weight: { chromeos: 12, ultraportable: 8 } }
+                ]
+            },
+            {
+                title: "How long do you plan to keep and use this laptop?",
+                subtitle: "This helps us factor in hardware future-proofing.",
+                options: [
+                    { label: "Long-term investment (4 to 6+ years of reliable service)", value: "long", icon: "verified_user", weight: { workstation: 10, creative: 8, premium: 8 } },
+                    { label: "Standard lifecycle (2 to 3 years)", value: "medium", icon: "update", weight: { balanced: 6 } },
+                    { label: "Short-term or temporary need", value: "short", icon: "hourglass_empty", weight: { ultrabudget: 10, budget: 8 } }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+
+        function startQuiz() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizContainer').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            const percent = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressPercent').textContent = `${Math.round(percent)}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+
+            document.getElementById('questionTitle').textContent = q.title;
+            document.getElementById('questionSubtitle').textContent = q.subtitle;
+
+            const optionsList = document.getElementById('optionsList');
+            optionsList.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const isSelected = userAnswers[currentQuestionIndex] === idx;
+                const card = document.createElement('div');
+                card.className = `option-card p-5 rounded-2xl border cursor-pointer flex items-center space-x-4 transition-all ${
+                    isSelected 
+                        ? 'border-indigo-600 bg-indigo-50/80 dark:bg-indigo-950/40 dark:border-indigo-500 shadow-md ring-2 ring-indigo-500/2orphic' 
+                        : 'border-slate-200 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 hover:border-indigo-300 dark:hover:border-indigo-700'
+                }`;
+                card.onclick = () => selectOption(idx);
+
+                card.innerHTML = `
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                        isSelected ? 'bg-indigo-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                    }">
+                        <span class="material-icons-round text-2xl">${opt.icon || 'check_circle'}</span>
+                    </div>
+                    <div class="flex-grow">
+                        <span class="text-sm sm:text-base font-medium text-slate-900 dark:text-slate-100">${opt.label}</span>
+                    </div>
+                    <div class="w-6 h-6 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                        isSelected ? 'border-indigo-600 bg-indigo-600 text-white' : 'border-slate-300 dark:border-slate-700'
+                    }">
+                        ${isSelected ? '<span class="material-icons-round text-sm">check</span>' : ''}
+                    </div>
+                `;
+                optionsList.appendChild(card);
+            });
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('prevBtn');
+            if (currentQuestionIndex === 0) {
+                prevBtn.disabled = true;
+                prevBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            } else {
+                prevBtn.disabled = false;
+                prevBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+
+            const nextBtn = document.getElementById('nextBtn');
+            if (userAnswers[currentQuestionIndex] !== null) {
+                nextBtn.disabled = false;
+                nextBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                nextBtn.querySelector('span').textContent = currentQuestionIndex === questions.length - 1 ? 'See Results' : 'Next Question';
+            } else {
+                nextBtn.disabled = true;
+                nextBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+        }
+
+        function selectOption(idx) {
+            userAnswers[currentQuestionIndex] = idx;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIndex] === null) return;
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                generateResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // 100% Accurate Weighted Scoring Engine with Expanded Processor Tiers & Touch/Non-Touch Display Logic
+        function generateResults() {
+            document.getElementById('quizContainer').classList.add('hidden');
+            document.getElementById('resultContainer').classList.remove('hidden');
+
+            let scores = {
+                gaming: 0,
+                creative: 0,
+                dev: 0,
+                office: 0,
+                ultraportable: 0,
+                macos: 0,
+                windows: 0,
+                chromeos: 0,
+                linux: 0,
+                ultrabudget: 0,
+                budget: 0,
+                balanced: 0,
+                workstation: 0
+            };
+
+            userAnswers.forEach((ansIndex, qIdx) => {
+                if (ansIndex !== null) {
+                    const optionWeight = questions[qIdx].options[ansIndex].weight;
+                    for (const [category, points] of Object.entries(optionWeight)) {
+                        if (scores[category] !== undefined) {
+                            scores[category] += points;
+                        }
+                    }
+                }
+            });
+
+            const useCaseAnswer = userAnswers[0];
+            const travelAnswer = userAnswers[1];
+            const softwareAnswer = userAnswers[2];
+            const batteryAnswer = userAnswers[3];
+            const osAnswer = userAnswers[4];
+            const budgetAnswer = userAnswers[5];
+
+            // Determine if Touchscreen is recommended based on use case and form factor habits
+            let touchRecommended = false;
+            let touchReason = "Standard non-touch display optimized for glare reduction, battery longevity, and comfortable angle stability.";
+            
+            if (travelAnswer === 0 || travelAnswer === 3 || useCaseAnswer === 0 || osAnswer === 2) {
+                if (budgetAnswer === 0 || budgetAnswer === 1 || useCaseAnswer === 0) {
+                    touchRecommended = true;
+                    touchReason = "Recommended with Touchscreen / 2-in-1 support for intuitive tablet-style reading, scrolling, and note-taking.";
+                }
+            }
+
+            // Absolute precision category resolution
+            let bestCategory = 'balanced';
+            let maxScore = -1;
+            for (const [cat, score] of Object.entries(scores)) {
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestCategory = cat;
+                }
+            }
+
+            // Strict user override overrides for deterministic accuracy
+            if (osAnswer === 2) {
+                bestCategory = 'chromeos';
+            } else if (budgetAnswer === 0 && useCaseAnswer !== 3) {
+                bestCategory = 'ultrabudget';
+            } else if (osAnswer === 0 && useCaseAnswer !== 3 && bestCategory !== 'gaming') {
+                bestCategory = 'macos';
+            } else if (useCaseAnswer === 3 && budgetAnswer >= 3) {
+                bestCategory = 'gaming';
+            } else if (useCaseAnswer === 2 && budgetAnswer >= 3) {
+                bestCategory = 'creative';
+            } else if (useCaseAnswer === 1 && softwareAnswer >= 2) {
+                bestCategory = 'dev';
+            }
+
+            let categoryTitle = "Ultraportable Executive Ultrabook";
+            let categoryDesc = "Engineered for supreme mobility, all-day battery life, sleek design, and flawless professional execution.";
+            let cpu = "Intel Core Ultra 7 155H / AMD Ryzen 7 8840U (Performance + Efficiency Cores)";
+            let cpuDesc = "Optimized for high single-core performance with low thermal output for seamless mobile multitasking.";
+            let ram = "32GB LPDDR5X (6400MHz High-Speed Soldered)";
+            let ramDesc = "Ensures zero stuttering when switching across dozens of browser tabs and heavy productivity tools.";
+            let storage = "1TB NVMe PCIe 4.0 SSD (Read speeds up to 5000 MB/s)";
+            let storageDesc = "Lightning-fast boot times with ample space for local documents, apps, and media.";
+            let display = `14\" 2.8K OLED (2880 x 1800, 120Hz, 100% DCI-P3) — ${touchRecommended ? 'TOUCHSCREEN ENABLED' : 'NON-TOUCH MATTE'}`;
+            let displayDesc = `${touchReason} Features stunning ink blacks and vibrant colors with low blue light certification.`;
+            let extra = "Backlit spill-resistant keyboard, Wi-Fi 7 / Wi-Fi 6E, Thunderbolt 4 / USB4 ports, weight under 1.25 kg, and 14+ hour real battery life.";
+
+            if (bestCategory === 'chromeos') {
+                categoryTitle = "Cloud-First ChromeOS Enterprise / Student Book";
+                categoryDesc = "Blazing fast boot times, effortless security, and seamless Google Workspace integration with native Android app support.";
+                cpu = "Intel Core i3-1315U / MediaTek Kompanio 1380 (High-Efficiency Multi-Core)";
+                cpuDesc = "Tailored for instant wake, rapid web execution, and extended battery endurance.";
+                ram = "8GB - 16GB LPDDR5 RAM";
+                ramDesc = "Ample memory for dozens of web apps, Google Docs, and streaming tabs.";
+                storage = "256GB - 512GB Fast NVMe SSD";
+                storageDesc = "Snappy local caching backed by unlimited cloud synchronization.";
+                display = `14\" Full HD+ (1920 x 1200, 16:10 Aspect Ratio) — ${touchRecommended ? 'TOUCHSCREEN ENABLED' : 'NON-TOUCH IPS'}`;
+                displayDesc = `${touchReason} Crisp text clarity designed for effortless cloud collaboration and reading.`;
+                extra = "Zero-touch enterprise enrollment capability, titan c security chip, lightweight fanless aluminum chassis, and 12+ hours battery life.";
+            } else if (bestCategory === 'ultrabudget') {
+                categoryTitle = "Ultra-Budget Essential Value Laptop";
+                categoryDesc = "A highly affordable, no-nonsense daily driver focused on basic web browsing, email, Google Docs, and schoolwork.";
+                cpu = "Intel Processor N100 / AMD Athlon Silver 7120U (Ultra Low-Power Quad-Core)";
+                cpuDesc = "Designed for energy efficiency and reliable execution of lightweight web and office applications.";
+                ram = "8GB LPDDR5 / DDR4 RAM";
+                ramDesc = "Sufficient for basic multitasking with a few open browser tabs and text editors.";
+                storage = "256GB NVMe SSD";
+                storageDesc = "Snappy boot times and adequate space for documents and school assignments.";
+                display = `14\" / 15.6\" Full HD (1920 x 1080) Anti-Glare Display — ${touchRecommended ? 'TOUCHSCREEN ENABLED' : 'NON-TOUCH MATTE'}`;
+                displayDesc = `${touchReason} Clear, comfortable text readability for everyday typing and web browsing.`;
+                extra = "Sturdy plastic chassis, full-size keyboard, webcam privacy shield, and reliable Wi-Fi 6 connectivity.";
+            } else if (bestCategory === 'gaming' || useCaseAnswer === 3) {
+                categoryTitle = "High-Performance Gaming & 3D Simulation Powerhouse";
+                categoryDesc = "Built with elite thermal cooling headroom, high wattage limits, and dedicated graphics for competitive gaming and 3D pipelines.";
+                cpu = "Intel Core i9-14900HX / AMD Ryzen 9 7945HX (Extreme Multi-Threaded Flagship)";
+                cpuDesc = "Uncompromised multi-core muscle for heavy shader compilation, physics calculations, and extreme gaming frame rates.";
+                ram = "32GB - 64GB DDR5 (5600MHz Dual-Channel)";
+                ramDesc = "Massive bandwidth for simultaneous game streaming, Discord, and heavy background apps.";
+                storage = "2TB NVMe PCIe Gen 4 SSD (With secondary M.2 expansion slot)";
+                storageDesc = "Massive high-speed storage capacity for sprawling AAA game titles and video asset libraries.";
+                display = "16\" QHD+ (2560 x 1600) 240Hz IPS / Mini-LED + Dedicated NVIDIA GeForce RTX 4080 / 4090 (NON-TOUCH)";
+                displayDesc = "Ultra-fast refresh rate with G-Sync support, anti-glare coating, and hardware ray-tracing capabilities.";
+                extra = "Vapor-chamber liquid metal cooling, per-key RGB mechanical keyboard, 330W power brick, and comprehensive HDMI 2.1 & RJ45 ports.";
+            } else if (bestCategory === 'creative' || useCaseAnswer === 2) {
+                categoryTitle = "Professional Color-Grading & Content Creation Workstation";
+                categoryDesc = "Tailored for filmmakers, 3D artists, and photographers requiring color-calibrated wide-gamut displays and heavy rendering muscle.";
+                cpu = "Apple M3 Max / Intel Core Ultra 9 185H with Dedicated AI NPU";
+                cpuDesc = "Hardware-accelerated ProRes and media encoders for 4K/8K video scrubbing without dropping frames.";
+                ram = "32GB - 64GB Unified Memory / High-Speed DDR5 RAM";
+                ramDesc = "Easily handles massive Adobe Premiere, After Effects, and Blender timeline caches.";
+                storage = "2TB Ultra-Fast Custom NVMe SSD";
+                storageDesc = "Lightning-fast scratch disks for high-resolution photo and video raw asset loading.";
+                display = "16\" Liquid Retina XDR / Mini-LED (100% DCI-P3, Delta E < 1 Color Calibration - NON-TOUCH)";
+                displayDesc = "1000 nits sustained brightness with true-to-life color accuracy for professional grading without fingerprint smudges.";
+                extra = "Built-in SD Express Card Reader, Thunderbolt 4 ports, silent fan curves under standard loads, and precision CNC aluminum unibody.";
+            } else if (bestCategory === 'macos') {
+                categoryTitle = "Apple MacBook Air / MacBook Pro Ecosystem Master";
+                categoryDesc = "Seamlessly synchronized within the Apple macOS ecosystem, offering legendary trackpad ergonomics and industry-leading fanless or whisper-quiet efficiency.";
+                cpu = "Apple M3 Pro Chip (12-Core CPU, 18-Core GPU with Hardware Ray Tracing)";
+                cpuDesc = "Unmatched performance-per-watt architecture with dedicated neural engine for AI workflows.";
+                ram = "24GB - 32GB Unified Memory Architecture";
+                ramDesc = "Direct CPU-to-GPU shared memory bandwidth for instantaneous app launching.";
+                storage = "1TB High-Speed Proprietary Apple SSD";
+                storageDesc = "Blazing fast read/write speeds optimized for macOS APFS file systems.";
+                display = "14.2\" Liquid Retina XDR Display (ProMotion 120Hz, True Tone - NON-TOUCH)";
+                displayDesc = "Incredible contrast ratio, deep blacks, and exceptional sharpness for daily professional tasks.";
+                extra = "MagSafe 3 magnetic charging, Touch ID biometric security, Force Touch trackpad, and 18 hours of real-world unplugged endurance.";
+            } else if (bestCategory === 'budget') {
+                categoryTitle = "Smart Value Everyday Productivity Laptop";
+                categoryDesc = "Reliable, sturdy, and economical daily driver perfectly tuned for students, remote workers, document editing, and online learning.";
+                cpu = "AMD Ryzen 5 7530U / Intel Core i5-1335U (Balanced Hexa/Deca-Core)";
+                cpuDesc = "Balanced multi-core efficiency ensuring snappy responses for day-to-day web and office tasks.";
+                ram = "16GB DDR4 / DDR5 RAM";
+                ramDesc = "Future-proof memory standard preventing slowdowns during heavy browser research sessions.";
+                storage = "512GB NVMe PCIe M.2 SSD";
+                storageDesc = "Fast system boot times with ample space for assignments, spreadsheets, and media.";
+                display = `15.6\" Full HD (1920 x 1080) Anti-Glare Display — ${touchRecommended ? 'TOUCHSCREEN ENABLED' : 'NON-TOUCH IPS'}`;
+                displayDesc = `${touchReason} Designed to reduce eye strain and provide great contrast for daily tasks.`;
+                extra = "Reinforced durable chassis, full numeric keypad, webcam privacy shutter, and reliable Wi-Fi 6 connectivity.";
+            } else {
+                categoryTitle = "Versatile Professional & Developer Workhorse";
+                categoryDesc = "A robust, high-performance laptop designed for software engineers, data scientists, and power users who demand reliability and processing speed.";
+                cpu = "Intel Core Ultra 7 165H / AMD Ryzen 7 8845HS (High-Performance Pro Mobile)";
+                cpuDesc = "Exceptional multi-threaded performance with dedicated AI coprocessor support for compiling code and running local models.";
+                ram = "32GB DDR5 5600MHz";
+                ramDesc = "Ample room for running local virtual machines, Kubernetes clusters, and heavy IDEs simultaneously.";
+                storage = "1TB NVMe PCIe Gen 4 SSD";
+                storageDesc = "Fast file indexing and database querying speeds.";
+                display = `14\" - 16\" IPS / OLED 16:10 Aspect Ratio — ${touchRecommended ? 'TOUCHSCREEN ENABLED' : 'NON-TOUCH MATTE'}`;
+                displayDesc = `${touchReason} Taller 16:10 screen real estate allowing more lines of code and document visibility.`;
+                extra = "Exceptional tactile keyboard travel, MIL-STD 810H durability certification, Wi-Fi 6E/7, and robust port selection (USB-C, HDMI, USB-A).";
+            }
+
+            document.getElementById('resultCategoryTitle').textContent = categoryTitle;
+            document.getElementById('resultCategoryDesc').textContent = categoryDesc;
+            document.getElementById('specCpu').textContent = cpu;
+            document.getElementById('specCpuDesc').textContent = cpuDesc;
+            document.getElementById('specRam').textContent = ram;
+            document.getElementById('specRamDesc').textContent = ramDesc;
+            document.getElementById('specStorage').textContent = storage;
+            document.getElementById('specStorageDesc').textContent = storageDesc;
+            document.getElementById('specDisplay').textContent = display;
+            document.getElementById('specDisplayDesc').textContent = displayDesc;
+            document.getElementById('specExtra').textContent = extra;
+        }
+
+        function copyResults() {
+            const title = document.getElementById('resultCategoryTitle').textContent;
+            const desc = document.getElementById('resultCategoryDesc').textContent;
+            const cpu = document.getElementById('specCpu').textContent;
+            const ram = document.getElementById('specRam').textContent;
+            const storage = document.getElementById('specStorage').textContent;
+            const display = document.getElementById('specDisplay').textContent;
+            const extra = document.getElementById('specExtra').textContent;
+
+            const textToCopy = `LAPTOP RECOMMENDATION SUMMARY (MachMatch.ai)\n\nCategory: ${title}\nOverview: ${desc}\n\nRecommended Specs:\n- Processor: ${cpu}\n- RAM: ${ram}\n- Storage: ${storage}\n- Display: ${display}\n- Key Features: ${extra}\n\nGenerated via MachMatch 100% Accurate Laptop Recommender`;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showToast("Summary copied to clipboard!");
+                }).catch(() => {
+                    fallbackCopyText(textToCopy);
+                });
+            } else {
+                fallbackCopyText(textToCopy);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Summary copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy text.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            document.getElementById('resultContainer').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

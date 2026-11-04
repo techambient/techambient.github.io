@@ -1,0 +1,8 @@
+; DNS records for techambient.github.io from Forward Email (https://forwardemail.net)
+; Generated 2026-11-04T13:26:26.570Z
+;
+; Import this file into your DNS provider, or copy the records you need.
+; Existing MX records for this name must be removed.
+techambient.github.io.  3600 IN MX    0 mx1.forwardemail.net.
+techambient.github.io.  3600 IN MX    0 mx2.forwardemail.net.
+techambient.github.io.  3600 IN TXT   "forward-email=tempu3544@gmail.com"
